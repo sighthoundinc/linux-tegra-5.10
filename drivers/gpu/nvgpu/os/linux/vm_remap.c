@@ -1,18 +1,5 @@
-/*
- * Copyright (c) 2017-2022, NVIDIA CORPORATION.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+// SPDX-License-Identifier: GPL-2.0-only
+// SPDX-FileCopyrightText: Copyright (c) 2017-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 
 #include <linux/dma-buf.h>
 
@@ -43,7 +30,7 @@ int nvgpu_vm_remap_os_buf_get(struct vm_gk20a *vm,
 	struct dma_buf *dmabuf;
 	struct sg_table *sgt = NULL;
 	struct nvgpu_sgt *nv_sgt = NULL;
-	struct dma_buf_attachment *attachment;
+	struct dma_buf_attachment *attachment = NULL;
 	enum nvgpu_aperture aperture;
 	enum dma_data_direction dmabuf_direction;
 	int err = 0;
@@ -105,9 +92,9 @@ int nvgpu_vm_remap_os_buf_get(struct vm_gk20a *vm,
 	return 0;
 
 clean_up:
-	if (IS_ERR(sgt)) {
+	if (!IS_ERR(sgt))
 		nvgpu_mm_unpin(dev, dmabuf, attachment, sgt);
-	}
+
 	dma_buf_put(dmabuf);
 
 	return err;
