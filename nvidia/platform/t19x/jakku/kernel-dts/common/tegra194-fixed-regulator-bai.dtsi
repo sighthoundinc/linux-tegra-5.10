@@ -1,0 +1,128 @@
+/ {
+	i2c@31a0000 {
+		ina3221x@40 { // NAMES FOR THE NEW INA'S
+			compatible = "ti,ina3221x";
+			reg = <0x40>;
+			ti,trigger-config = <0x7003>;
+			ti,continuous-config = <0x7c07>;
+			ti,enable-forced-continuous;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			channel@0 {
+				reg = <0x0>;
+				ti,rail-name = "VDD_12V_SENSE";
+				ti,shunt-resistor-mohm = <47>;
+			};
+			channel@1 {
+				reg = <0x1>;
+				ti,rail-name = "VDD_3V3_SENSE";
+				ti,shunt-resistor-mohm = <150>;
+			};
+			channel@2 {
+				reg = <0x2>;
+				ti,rail-name = "VDD_5V_SENSE";
+				ti,shunt-resistor-mohm = <47>;
+			};
+		};
+
+		ina3221x@41 {
+			compatible = "ti,ina3221x";
+			reg = <0x41>;
+			ti,trigger-config = <0x7003>;
+			ti,continuous-config = <0x7c07>;
+			ti,enable-forced-continuous;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			channel@0 {
+				reg = <0x0>;
+				ti,rail-name = "VDD_1V2_SENSE";
+				ti,shunt-resistor-mohm = <47>;
+			};
+			channel@1 {
+				reg = <0x1>;
+				ti,rail-name = "VDD_4V_SENSE";
+				ti,shunt-resistor-mohm = <150>;
+			};
+			channel@2 {
+				reg = <0x2>;
+				ti,rail-name = "VDD_1V8_SENSE";
+				ti,shunt-resistor-mohm = <47>;
+			};
+		};
+	};
+	
+	/* Added I2C controller which will control the power */
+
+	i2c@c240000 {
+		gpio_cam_power_i2c: gpio@22 {
+			compatible = "microchip,mcp23017";
+			reg = <0x22>;
+			gpio-controller;
+			#gpio-cells = <0x2>;
+			vcc-supply = <&battery_reg>;
+			status = "okay";
+			output-high;
+			label = "cam_pwr_rails";
+			
+			pinctrl-names = "default";
+			pinctrl-0 = <&gpio22pullups>;
+
+			gpio22pullups: pinmux {
+				pins = "gpio0", "gpio1", "gpio2", "gpio3", "gpio4", "gpio5",  "gpio6",  "gpio7",
+				       "gpio8", "gpio9", "gpio10", "gpio11", "gpio12", "gpio13",  "gpio14",  "gpio15";
+				bias-pull-up; 
+			};
+		};
+	};
+
+    fixed-regulators {
+		/* Added I2C Regulators here */
+		en_vdd_cam: regulator@2 {
+			compatible = "regulator-fixed";
+			reg = <2>;
+			regulator-name = "en-vdd-cam";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			gpio = <&gpio_cam_power_i2c 11 1>;
+			enable-active-high;
+			regulator-always-on;
+			regulator-boot-on;
+		};
+
+		en_avdd_disp_3v3: regulator@3 {
+			compatible = "regulator-fixed";
+			reg = <3>;
+			regulator-name = "en-vdd-disp-3v3";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			gpio = <&gpio_cam_power_i2c 0 1>;
+			enable-active-high;
+			regulator-always-on;
+			regulator-boot-on;
+		};
+
+		en_vdd_cam_hv_2v8: regulator@4 {
+			compatible = "regulator-fixed";
+			reg = <4>;
+			regulator-name = "en-vdd-cam-hv-2v8";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+			gpio = <&gpio_cam_power_i2c 12 1>;
+			enable-active-high;
+			regulator-always-on;
+			regulator-boot-on;
+		};
+
+		en_vdd_cam_1v2: regulator@5 {
+			compatible = "regulator-fixed";
+			reg = <5>;
+			regulator-name = "en-vdd-cam-1v2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+			gpio = <&gpio_cam_power_i2c 10 1>;
+			enable-active-high;
+			regulator-always-on;
+			regulator-boot-on;
+		};
+    };
+};
