@@ -2632,7 +2632,9 @@ static int ether_open(struct net_device *dev)
 
 	/* As all registers reset as part of ether_close(), reset private
 	 * structure variable as well */
+#ifdef ETHER_VLAN_VID_SUPPORT
 	pdata->vlan_hash_filtering = OSI_PERFECT_FILTER_MODE;
+#endif /* ETHER_VLAN_VID_SUPPORT */
 	pdata->l2_filtering_mode = OSI_PERFECT_FILTER_MODE;
 
 	/* Initialize PTP */
@@ -4035,6 +4037,7 @@ static int ether_set_features(struct net_device *ndev, netdev_features_t feat)
 	return ret;
 }
 
+#ifdef ETHER_VLAN_VID_SUPPORT
 /**
  * @brief Adds VLAN ID. This function is invoked by upper
  * layer when a new VLAN id is registered. This function updates the HW
@@ -4122,6 +4125,7 @@ static int ether_vlan_rx_kill_vid(struct net_device *ndev, __be16 vlan_proto,
 
 	return ret;
 }
+#endif /* ETHER_VLAN_VID_SUPPORT */
 
 #if (KERNEL_VERSION(5, 10, 0) <= LINUX_VERSION_CODE)
 /**
@@ -4174,8 +4178,10 @@ static const struct net_device_ops ether_netdev_ops = {
 	.ndo_select_queue = ether_select_queue,
 	.ndo_set_features = ether_set_features,
 	.ndo_set_rx_mode = ether_set_rx_mode,
+#ifdef ETHER_VLAN_VID_SUPPORT
 	.ndo_vlan_rx_add_vid = ether_vlan_rx_add_vid,
 	.ndo_vlan_rx_kill_vid = ether_vlan_rx_kill_vid,
+#endif /* ETHER_VLAN_VID_SUPPORT */
 #if (KERNEL_VERSION(5, 10, 0) <= LINUX_VERSION_CODE)
 	.ndo_setup_tc = ether_setup_tc,
 #endif
@@ -6239,9 +6245,11 @@ static void ether_set_ndev_features(struct net_device *ndev,
 		features |= NETIF_F_HW_VLAN_CTAG_TX;
 	}
 
+#ifdef ETHER_VLAN_VID_SUPPORT
 	/* Rx VLAN tag stripping/filtering enabled by default */
 	features |= NETIF_F_HW_VLAN_CTAG_RX;
 	features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+#endif /* ETHER_VLAN_VID_SUPPORT */
 
 	/* Receive Hashing offload */
 	if (pdata->hw_feat.rss_en) {
