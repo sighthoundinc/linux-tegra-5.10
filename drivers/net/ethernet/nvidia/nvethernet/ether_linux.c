@@ -6062,6 +6062,7 @@ static int ether_parse_dt(struct ether_priv_data *pdata)
 			dev_info(dev,
 				 "DT instance_id missing, setting default to MGBE0\n");
 			osi_core->instance_id = 0;
+			ret = 0;
 		}
 	}
 
