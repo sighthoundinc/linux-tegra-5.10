@@ -329,6 +329,15 @@
 		status = "okay";
 	};
 
+	sdhci_sd_ext: sdhci@3440000 {
+		mmc-ocr-mask = <0x0>;
+		nvidia,vmmc-always-on;
+		nvidia,vqmmc-always-on;
+		vmmc-supply = <&battery_reg>;
+		vqmmc-supply = <&battery_reg>;
+ 	    status = "okay";
+	};
+
 	tegra-hsp@b950000 {
 		status = "okay";
 	};
