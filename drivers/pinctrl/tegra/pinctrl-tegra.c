@@ -106,6 +106,7 @@ static const struct cfg_param {
 	{"nvidia,drive-type",		TEGRA_PINCONF_PARAM_DRIVE_TYPE},
 	{"nvidia,func",			TEGRA_PINCONF_PARAM_FUNCTION},
 	{"nvidia,pad-power",		TEGRA_PINCONF_PARAM_PAD_POWER},
+	{"nvidia,gpio-mode",		TEGRA_PINCONF_PARAM_GPIO_MODE},
 };
 
 static int tegra_pinctrl_dt_subnode_to_map(struct pinctrl_dev *pctldev,
@@ -629,6 +630,12 @@ static int tegra_pinconf_reg(struct tegra_pmx *pmx,
 		*bank = g->pad_bank;
 		*reg = g->pad_reg;
 		*bit = g->pad_bit;
+		*width = 1;
+		break;
+	case TEGRA_PINCONF_PARAM_GPIO_MODE:
+		*bank = g->mux_bank;
+		*reg = g->mux_reg;
+		*bit = g->sfsel_bit;
 		*width = 1;
 		break;
 	default:
