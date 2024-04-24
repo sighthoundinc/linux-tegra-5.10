@@ -242,13 +242,15 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
 				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
 }
 
-static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg)
+static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
 {
+	int i;
 
-	*ptep = 0;
+	for (i = 0; i < num_entries; i++)
+		ptep[i] = 0;
 
 	if (!cfg->coherent_walk)
-		__arm_lpae_sync_pte(ptep, 1, cfg);
+		__arm_lpae_sync_pte(ptep, num_entries, cfg);
 }
 
 static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
@@ -627,12 +629,14 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
 		max_entries = ARM_LPAE_PTES_PER_TABLE(data) - unmap_idx_start;
 		num_entries = min_t(int, pgcount, max_entries);
 
+		pte = READ_ONCE(*ptep);
+		if (WARN_ON(!pte))
+			return 0;
+
+		__arm_lpae_clear_pte(ptep, &iop->cfg, num_entries);
 		while (i < num_entries) {
-			pte = READ_ONCE(*ptep);
 			if (WARN_ON(!pte))
 				break;
-
-			__arm_lpae_clear_pte(ptep, &iop->cfg);
 
 			if (!iopte_leaf(pte, lvl, iop->fmt)) {
 				/* Also flush any partial walks */
