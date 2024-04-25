@@ -1309,27 +1309,14 @@ static int arm_smmu_map_pages(struct iommu_domain *domain, unsigned long iova,
 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
 	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
-	u64 time_before = 0;
 	int ret;
 
 	if (!ops)
 		return -ENODEV;
 
-#if defined(CONFIG_TRACEPOINTS) && defined(CONFIG_ARM_SMMU_DEBUG)
-	if (static_key_false(&__tracepoint_arm_smmu_handle_mapping.key)
-		&& test_bit(smmu_domain->cfg.cbndx,
-				smmu_domain->smmu->debug_info->context_filter))
-		time_before = local_clock();
-#endif
-
 	arm_smmu_rpm_get(smmu);
 	ret = ops->map_pages(ops, iova, paddr, pgsize, pgcount, prot, gfp, mapped);
 	arm_smmu_rpm_put(smmu);
-
-	if (time_before)
-		trace_arm_smmu_handle_mapping(dev_name(smmu->dev), time_before,
-				to_smmu_domain(domain)->cfg.cbndx, iova, paddr,
-				size, prot);
 
 	return ret;
 }
@@ -1341,27 +1328,15 @@ static size_t arm_smmu_unmap_pages(struct iommu_domain *domain, unsigned long io
 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
 	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
-	u64 time_before = 0;
 	size_t ret;
 
 	if (!ops)
 		return 0;
 
-#if defined(CONFIG_TRACEPOINTS) && defined(CONFIG_ARM_SMMU_DEBUG)
-	if (static_key_false(&__tracepoint_arm_smmu_handle_mapping.key)
-		&& test_bit(smmu_domain->cfg.cbndx,
-				smmu_domain->smmu->debug_info->context_filter))
-		time_before = local_clock();
-#endif
-
 	arm_smmu_rpm_get(smmu);
 	ret = ops->unmap_pages(ops, iova, pgsize, pgcount, iotlb_gather);
 	arm_smmu_rpm_put(smmu);
 
-	if (time_before)
-		trace_arm_smmu_handle_mapping(dev_name(smmu->dev), time_before,
-				to_smmu_domain(domain)->cfg.cbndx, iova, 0,
-				size, 0);
 	return ret;
 }
 
