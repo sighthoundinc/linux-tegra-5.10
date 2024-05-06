@@ -55,10 +55,9 @@
 				<0 386 0x4>,	/* vm1 */
 				<0 387 0x4>,	/* vm2 */
 				<0 388 0x4>,	/* vm3 */
-				<0 389 0x4>,	/* vm4 */
 				<0 390 0x4>,	/* MACsec non-secure intr */
 				<0 391 0x4>;	/* MACsec secure intr */
-		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3", "vm4",
+		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3",
 				  "macsec-ns-irq", "macsec-s-irq";
 		resets = <&bpmp_resets TEGRA234_RESET_MGBE0_MAC>,
 			 <&bpmp_resets TEGRA234_RESET_MGBE0_PCS>,
@@ -128,10 +127,9 @@
 				<0 394 0x4>,	/* vm1 */
 				<0 395 0x4>,	/* vm2 */
 				<0 396 0x4>,	/* vm3 */
-				<0 397 0x4>,	/* vm4 */
 				<0 398 0x4>,	/* MACsec non-secure intr */
 				<0 399 0x4>;	/* MACsec secure intr */
-		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3", "vm4",
+		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3",
 				  "macsec-ns-irq", "macsec-s-irq";
 		resets = <&bpmp_resets TEGRA234_RESET_MGBE1_MAC>,
 			 <&bpmp_resets TEGRA234_RESET_MGBE1_PCS>,
@@ -201,10 +199,9 @@
 				<0 402 0x4>,	/* vm1 */
 				<0 403 0x4>,	/* vm2 */
 				<0 404 0x4>,	/* vm3 */
-				<0 405 0x4>,	/* vm4 */
 				<0 406 0x4>,	/* MACsec non-secure intr */
 				<0 407 0x4>;	/* MACsec secure intr */
-		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3", "vm4",
+		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3",
 				  "macsec-ns-irq", "macsec-s-irq";
 		resets = <&bpmp_resets TEGRA234_RESET_MGBE2_MAC>,
 			 <&bpmp_resets TEGRA234_RESET_MGBE2_PCS>,
@@ -274,10 +271,9 @@
 				<0 410 0x4>,	/* vm1 */
 				<0 411 0x4>,	/* vm2 */
 				<0 412 0x4>,	/* vm3 */
-				<0 413 0x4>,	/* vm4 */
 				<0 414 0x4>,	/* MACsec non-secure intr */
 				<0 415 0x4>;	/* MACsec secure intr */
-		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3", "vm4",
+		interrupt-names = "common", "vm0", "vm1", "vm2", "vm3",
 				  "macsec-ns-irq", "macsec-s-irq";
 		resets = <&bpmp_resets TEGRA234_RESET_MGBE3_MAC>,
 			 <&bpmp_resets TEGRA234_RESET_MGBE3_PCS>,
