@@ -1,5 +1,7 @@
-/*
- * Copyright (c) 2016-2023, NVIDIA CORPORATION.  All rights reserved.
+// SPDX-License-Identifier: GPL-2.0-only
+/* SPDX-FileCopyrightText: Copyright (c) 2017- 2024 NVIDIA CORPORATION & AFFILIATES.
+ * All rights reserved.
+ *
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -1503,7 +1505,12 @@ int vi_capture_status(
 
 	/* negative timeout means wait forever */
 	if (timeout_ms < 0) {
-		wait_for_completion(&capture->capture_resp);
+		ret = wait_for_completion_interruptible(&capture->capture_resp);
+		if (ret == -ERESTARTSYS) {
+			dev_dbg(chan->dev,
+				"capture status interrupted\n");
+			return -ETIMEDOUT;
+		}
 	} else {
 		ret = wait_for_completion_timeout(
 				&capture->capture_resp,
