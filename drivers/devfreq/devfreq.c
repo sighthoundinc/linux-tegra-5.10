@@ -1684,7 +1684,7 @@ static ssize_t trans_stat_show(struct device *dev,
 			break;
 
 		len += scnprintf(buf + len, PAGE_SIZE - len, "%10lu:",
-				df->profile->freq_table[i]);
+				 df->profile->freq_table[i]);
 		for (j = 0; j < max_state; j++) {
 			if (len >= PAGE_SIZE - 1)
 				break;
