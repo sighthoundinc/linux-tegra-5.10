@@ -31,4 +31,12 @@
 					 <&bpmp TEGRA234_CLK_PLLC4_VCO_DIV2>;
 		status = "okay";
 	};
+	sdhci_sd_ext: sdhci@3440000 {
+		mmc-ocr-mask = <0x0>;
+		nvidia,vmmc-always-on;
+		nvidia,vqmmc-always-on;
+		vmmc-supply = <&p3767_vdd_5v>;
+		vqmmc-supply = <&p3767_vdd_5v>;
+		status = "okay";
+	};
 };
