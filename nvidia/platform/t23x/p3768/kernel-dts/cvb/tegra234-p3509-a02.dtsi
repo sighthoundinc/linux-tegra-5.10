@@ -18,7 +18,7 @@
 #include "tegra234-p3509-audio.dtsi"
 #include "tegra234-p3768-camera-rbpcv3-imx477.dtsi"
 #include "tegra234-p3768-camera-rbpcv2-imx219.dtsi"
-
+#include "tegra234-p3768-camera-rbpcv2-imx334.dtsi"
 / {
 	gpio-keys {
 		compatible = "gpio-keys";
