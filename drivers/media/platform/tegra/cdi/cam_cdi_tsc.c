@@ -1,7 +1,7 @@
 /*
  * cdi_tsc.c - CDI TSC Signal Generation Driver.
  *
- * Copyright (c) 2021-2023 NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2021-2025 NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -466,22 +466,33 @@ static void cdi_tsc_debugfs_remove(struct tsc_signal_controller *controller)
 }
 #endif
 
-static int cdi_tsc_chardev_open(struct inode* inode, struct file* file)
+static int cdi_tsc_chardev_open(struct inode *inode, struct file *file)
 {
-    pr_info("%s:Device opened\n",__func__);
-    /* Set External Fsync */
-    Hawk_Owl_Fsync_program(EXTERNAL_FSYNC);
-    return 0;
+	int err = 0;
+
+	pr_info("%s:Device opened\n", __func__);
+
+	/* Set External Fsync */
+	err = Hawk_Owl_Fsync_program(EXTERNAL_FSYNC);
+
+	return err;
 }
 
-static int cdi_tsc_chardev_release(struct inode* inode, struct file* file)
+static int cdi_tsc_chardev_release(struct inode *inode, struct file *file)
 {
+	struct tsc_signal_controller *controller = dev_get_drvdata(tsc_charDevice);
+	int err = -EFAULT;
 
-	pr_info("%s:Device closed\n",__func__);
+	dev_info(controller->dev, "%s Device closed .....\n", __func__);
+	/* To make sure whenever the device is closed, tsc is also stopped
+	 * to avoid inconsistency in generating the pulses */
+	err = cdi_tsc_stop_generators(controller);
+
+	if (err)
+		return err;
 	/* Set back to Internal Fsync */
-	Hawk_Owl_Fsync_program(INTERNAL_FSYNC);
-
-	return 0;
+	err = Hawk_Owl_Fsync_program(INTERNAL_FSYNC);
+	return err;
 }
 
 static long cdi_tsc_chardev_ioctl(struct file* file, unsigned int cmd, unsigned long arg)
