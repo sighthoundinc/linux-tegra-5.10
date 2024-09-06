@@ -79,23 +79,7 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&gpio22pullups>;
 
-			gpio22pullups: pinmux {
-				pins = "bit0A", // CTRL 3.3V
-					   "bit1A", // IRIS_DIR
-					   "bit2A", // IRIS_ENABLE
-					   "bit3A", // IRIS_STEP
-					   "bit4A", // IRIS_RESET
-					   "bit5A", // IRIS_MS1
-					   "bit6A", // IRIS_MS2
-					   "bit7A", // IRIS_SLEEP
-				       "bit0B", // IRCUT_INA
-					   "bit1B", // IRCUT_INB
-					   "bit2B", // CTRL 1.2V
-					   "bit3B", // CTRL 1.8V
-					   "bit4B", // CTRL 2.8V
-					   "bit5B", // BN_2
-					   "bit6B", // BN_1
-					   "bit7B"; // BN_0
+			gpio22pullups: pinmux { 
 				bias-pull-up; 
 			};
 		};
