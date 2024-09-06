@@ -72,7 +72,6 @@
 			reg = <0x22>;
 			gpio-controller;
 			#gpio-cells = <2>;
-			vcc-supply = <&p3767_vdd_5v>;
 			status = "okay";
 			output-high;
 			label = "cam_pwr_rails";
