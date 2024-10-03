@@ -73,12 +73,19 @@
 			compatible = "microchip,mcp23017";
 			reg = <0x22>;
 			gpio-controller;
-			#gpio-cells = <2>;
+			#gpio-cells = <0x2>;
+			vcc-supply = <&p3767_vdd_5v>;
 			status = "okay";
 			output-high;
 			label = "cam_pwr_rails";
-
+			
 			pinctrl-names = "default";
+			pinctrl-0 = <&gpio22pullups>;
+			gpio22pullups: pinmux {
+				pins = "gpio0", "gpio1", "gpio2", "gpio3", "gpio4", "gpio5",  "gpio6",  "gpio7",
+				       "gpio8", "gpio9", "gpio10", "gpio11", "gpio12", "gpio13",  "gpio14",  "gpio15";
+				bias-pull-up; 
+			};
 		};
 	};
 
@@ -87,7 +94,7 @@
 			compatible = "microchip,mcp23017";
 			reg = <0x20>;
 			gpio-controller;
-			#gpio-cells = <2>;
+			#gpio-cells = <0x2>;
 			status = "okay";
 			output-high;
 			label = "cam_zoom_focus";
