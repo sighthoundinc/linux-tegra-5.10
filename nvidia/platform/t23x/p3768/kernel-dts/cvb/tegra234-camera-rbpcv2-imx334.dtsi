@@ -17,24 +17,23 @@
 #include <dt-bindings/media/camera.h>
 
 / {
-	host1x {
-		vi@15c10000 {
-			num-channels = <1>;
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-				port@0 {
-					reg = <0>;
-					imx334_vi_in0: endpoint {
-						port-index = <0>;
-						bus-width = <4>;
-						remote-endpoint = <&imx334_csi_out0>;
-					};
+	tegra-capture-vi {
+		num-channels = <1>;
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			port@0 {
+				reg = <0>;
+				imx334_vi_in0: endpoint {
+					port-index = <0>;
+					bus-width = <4>;
+					remote-endpoint = <&imx334_csi_out0>;
 				};
 			};
 		};
-
-		nvcsi@15a00000 {
+	};
+	host1x@13e00000{
+        nvcsi@15a00000 {
 			num-channels = <1>;
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -61,43 +60,32 @@
 			};
 		};
 	};
-
 	i2c@c240000 {
 		imx334_a@1a {
 	        compatible = "framos,imx334";
 	        reg = <0x1a>;
-
 	        devnode = "video0";
-
 	        physical_w = "15.00";
 	        physical_h = "12.50";
-
 	        sensor_model ="imx334";
-
             /* Define any required hw resources needed by driver */
             /* ie. clocks, io pins, power sources */
-
             /* Defines number of frames to be dropped by driver internally after applying */
             /* sensor crop settings. Some sensors send corrupt frames after applying */
             /* crop co-ordinates */
             post_crop_frame_drop = "0";
-
             /* Convert Gain to unit of dB (decibel) befor passing to kernel driver */
             use_decibel_gain = "true";
-
             /* if true, delay gain setting by one frame to be in sync with exposure */
             delayed_gain = "false";
-
             /* enable CID_SENSOR_MODE_ID for sensor modes selection */
             use_sensor_mode_id = "false";
-
             /**
             * ==== Modes ====
             * A modeX node is required to support v4l2 driver
             * implementation with NVIDIA camera software stack
             *
             * == Signal properties ==
-
             *
             * phy_mode = "";
             * PHY mode used by the MIPI lanes for this device
@@ -106,7 +94,6 @@
             * CSI Serial interface connected to tegra
             * Incase of virtual HW devices, use virtual
             * For SW emulated devices, use host
-
             *
             * pix_clk_hz = "";
             * Sensor pixel clock used for calculations like exposure and framerate
@@ -148,11 +135,8 @@
             * Exposure step [step_exp_time/exposure_factor is the smallest step that can be configured]
             * Default Exposure Time [Default exposure to be initialized for the control.
             *     Set default exposure based on the default_framerate for optimal exposure settings]
-
             *
             * gain_factor = ""; (integer factor used for floating to fixed point conversion)
-
-
             * min_gain_val = ""; (ceil to integer)
             * max_gain_val = ""; (ceil to integer)
             * step_gain_val = ""; (ceil to integer)
@@ -165,12 +149,10 @@
             * step_exp_time = ""; (ceil to integer)
             * default_exp_time = ""; (ceil to integer)
             * Exposure Time limits for mode (sec)
-
             *
             * framerate_factor = ""; (integer factor used for floating to fixed point conversion)
             * min_framerate = ""; (ceil to integer)
             * max_framerate = ""; (ceil to integer)
-
             * step_framerate = ""; (ceil to integer)
             * default_framerate = ""; (ceil to integer)
             * Framerate limits for mode (fps)
@@ -179,7 +161,6 @@
             * Sensor embedded metadata height in units of rows.
             * If sensor does not support embedded metadata value should be 0.
             */
-
 	        mode0 { //
 		        mclk_khz = "37125";
 		        num_lanes = "4";
@@ -190,18 +171,15 @@
 		        cil_settletime = "0";
 		        active_w = "3864";
 		        active_h = "2180";
-
 		        dynamic_pixel_bit_depth = "10";
 		        csi_pixel_bit_depth = "10";
 		        mode_type = "bayer";
 		        pixel_phase = "rggb";
-
 		        readout_orientation = "0";
 		        line_length = "6600"; // doesnt effect FPS
 		        inherent_gain = "1";
 		        mclk_multiplier = "20.48";
 		        pix_clk_hz = "760000000";
-
                 gain_factor = "10";
 		        min_gain_val = "0"; /* 0dB */
 		        max_gain_val = "720"; /* 72dB */
@@ -231,18 +209,15 @@
 		        cil_settletime = "0";
 		        active_w = "1920";
 		        active_h = "1080";
-
 		        dynamic_pixel_bit_depth = "10";
 		        csi_pixel_bit_depth = "10";
 		        mode_type = "bayer";
 		        pixel_phase = "rggb";
-
 		        readout_orientation = "0";
 		        line_length = "6600";
 		        inherent_gain = "1";
 		        mclk_multiplier = "20.48";
 		        pix_clk_hz = "760000000";
-
 		        gain_factor = "10";
 		        min_gain_val = "0"; /* 0dB */
 		        max_gain_val = "720"; /* 72dB */
@@ -272,18 +247,15 @@
 		        cil_settletime = "0";
 		        active_w = "1944";
 		        active_h = "1080";
-
 		        dynamic_pixel_bit_depth = "12";
 		        csi_pixel_bit_depth = "12";
 		        mode_type = "bayer";
 		        pixel_phase = "rggb";
-
 		        readout_orientation = "0";
 		        line_length = "6600";
 		        inherent_gain = "1";
 		        mclk_multiplier = "20.48";
 		        pix_clk_hz = "760000000";
-
 		        gain_factor = "10";
 		        min_gain_val = "0"; /* 0dB */
 		        max_gain_val = "720"; /* 72dB */
@@ -313,18 +285,15 @@
 		        cil_settletime = "0";
 		        active_w = "3864";
 		        active_h = "2180";
-
 		        dynamic_pixel_bit_depth = "12";
 		        csi_pixel_bit_depth = "12";
 		        mode_type = "bayer";
 		        pixel_phase = "rggb";
-
 		        readout_orientation = "0";
 		        line_length = "6600";
 		        inherent_gain = "1";
 		        mclk_multiplier = "20.48";
 		        pix_clk_hz = "760000000";
-
 		        gain_factor = "10";
 		        min_gain_val = "0"; /* 0dB */
 		        max_gain_val = "720"; /* 72dB */
@@ -354,18 +323,15 @@
 		        cil_settletime = "0";
 		        active_w = "1920";
 		        active_h = "1080";
-
 		        dynamic_pixel_bit_depth = "12";
 		        csi_pixel_bit_depth = "12";
 		        mode_type = "bayer";
 		        pixel_phase = "rggb";
-
 		        readout_orientation = "0";
 		        line_length = "6600";
 		        inherent_gain = "1";
 		        mclk_multiplier = "20.48";
 		        pix_clk_hz = "760000000";
-
 		        gain_factor = "10";
 		        min_gain_val = "0"; /* 0dB */
 		        max_gain_val = "720"; /* 72dB */
@@ -385,11 +351,9 @@
 	            default_exp_time = "10000";/* us */
 		        embedded_metadata_height = "1";
 	        };
-
 	        ports {
 		        #address-cells = <1>;
 		        #size-cells = <0>;
-
 		        port@0 {
 			        reg = <0>;
 			        imx334_out0_0: endpoint {
@@ -402,13 +366,9 @@
         };
 	};
 };
-
-
-
 / {
 	tegra-camera-platform {
 		compatible = "nvidia, tegra-camera-platform";
-
 		/**
 		* Physical settings to calculate max ISO BW
 		*
@@ -444,7 +404,6 @@
         max_pixel_rate = <240000>;
 		isp_peak_byte_per_pixel = <5>;
 		isp_bw_margin_pct = <25>;
-
 		/**
 		 * The general guideline for naming badge_info contains 3 parts, and is as follows,
 		 * The first part is the camera_board_id for the module; if the module is in a FFD
