@@ -40,12 +40,15 @@
 			/* Define any required hw resources needed by driver */
 			/* ie. clocks, io pins, power sources */
 			clocks = <&bpmp_clks TEGRA234_CLK_EXTPERIPH1>,
-						<&bpmp_clks TEGRA234_CLK_EXTPERIPH1>;
+						<&bpmp_clks TEGRA234_CLK_PLLP_OUT0>;
 			clock-names = "extperiph1", "pllp_grtba";
 			mclk = "extperiph1";
 			clock-frequency = <37125000>;
 			reset-gpios = <&tegra_main_gpio CAM0_RST GPIO_ACTIVE_HIGH>;
 			pwdn-gpios = <&tegra_main_gpio CAM1_PWDN GPIO_ACTIVE_HIGH>;
+			vana-supply = <&en_vdd_cam_hv_2v8>;
+			vif-supply = <&en_vdd_cam>;
+			vdig-supply = <&en_vdd_cam_1v2>;
 		};
 	};
 };
