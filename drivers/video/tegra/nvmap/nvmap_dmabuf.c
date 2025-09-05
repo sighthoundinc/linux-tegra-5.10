@@ -1,7 +1,7 @@
 /*
  * dma_buf exporter for nvmap
  *
- * Copyright (c) 2012-2022, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2012-2025, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -352,6 +352,7 @@ int __nvmap_map(struct nvmap_handle *h, struct vm_area_struct *vma)
 		nvmap_handle_put(h);
 		return -ENOMEM;
 	}
+	mutex_init(&priv->vma_lock);
 	priv->handle = h;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
