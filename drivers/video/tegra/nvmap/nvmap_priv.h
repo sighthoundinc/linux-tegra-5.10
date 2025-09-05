@@ -3,7 +3,7 @@
  *
  * GPU memory management driver for Tegra
  *
- * Copyright (c) 2009-2022, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2009-2025, NVIDIA CORPORATION. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -97,7 +97,7 @@ do {                                                    \
 	}                                               \
 } while (0)
 
-#define GFP_NVMAP       (GFP_KERNEL | __GFP_HIGHMEM | __GFP_NOWARN)
+#define GFP_NVMAP       (GFP_KERNEL | __GFP_HIGHMEM | __GFP_NOWARN | __GFP_NORETRY)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0)
 
@@ -263,6 +263,7 @@ struct nvmap_handle {
 	 * read-only.
 	 */
 	bool is_ro;
+	u64 anon_count;
 };
 
 struct nvmap_handle_info {
@@ -287,6 +288,8 @@ struct nvmap_handle_ref {
 	struct rb_node	node;
 	atomic_t	dupes;	/* number of times to free on file close */
 	bool is_ro;
+	struct mm_struct *mm;
+	u64 anon_count;
 };
 
 #if defined(NVMAP_CONFIG_PAGE_POOLS)
@@ -896,6 +899,12 @@ static inline struct dma_buf *nvmap_id_array_id_release(struct xarray *xarr, u32
 	return NULL;
 }
 #endif
+
+static inline void nvmap_add_mm_counter(struct mm_struct *mm, int member, long value)
+{
+	atomic_long_add_return(value, &mm->rss_stat.count[member]);
+}
+
 int nvmap_dmabuf_set_drv_data(struct dma_buf *dmabuf,
 		struct device *dev, void *priv, void (*delete)(void *priv));
 void *nvmap_dmabuf_get_drv_data(struct dma_buf *dmabuf,

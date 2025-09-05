@@ -3,7 +3,7 @@
  *
  * User-space interface to nvmap
  *
- * Copyright (c) 2011-2022, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2011-2025, NVIDIA CORPORATION. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -259,6 +259,17 @@ static void destroy_client(struct nvmap_client *client)
 		smp_rmb();
 		if (ref->handle->owner == client)
 			ref->handle->owner = NULL;
+
+		/*
+		 * When a reference is freed, decrement rss counter of the process corresponding
+		 * to this ref and do mmput so that mm_struct can be freed, if required.
+		 */
+		if (ref->mm != NULL && ref->anon_count != 0) {
+			nvmap_add_mm_counter(ref->mm, MM_ANONPAGES, -ref->anon_count);
+			mmput(ref->mm);
+			ref->mm = NULL;
+			ref->anon_count = 0;
+		}
 
 		if (ref->is_ro)
 			dma_buf_put(ref->handle->dmabuf_ro);

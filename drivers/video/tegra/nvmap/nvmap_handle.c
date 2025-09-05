@@ -3,7 +3,7 @@
  *
  * Handle allocation and freeing routines for nvmap
  *
- * Copyright (c) 2009-2022, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2009-2025, NVIDIA CORPORATION. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -39,7 +39,7 @@
 
 #include "nvmap_priv.h"
 #include "nvmap_ioctl.h"
-
+#include <linux/sched/mm.h>
 /*
  * Verifies that the passed ID is a valid handle ID. Then the passed client's
  * reference to the handle is returned.
@@ -396,7 +396,21 @@ struct nvmap_handle_ref *nvmap_duplicate_handle(struct nvmap_client *client,
 
 	atomic_set(&ref->dupes, 1);
 	ref->handle = h;
+
+	/*
+	 * When a new reference is created to the handle, save mm, anon_count in ref and
+	 * increment ref count of mm.
+	 */
+	ref->mm = current->mm;
+	ref->anon_count = h->anon_count;
 	add_handle_ref(client, ref);
+
+	if (ref->anon_count != 0 && ref->mm != NULL) {
+		if (!mmget_not_zero(ref->mm))
+			goto exit;
+
+		nvmap_add_mm_counter(ref->mm, MM_ANONPAGES, ref->anon_count);
+	}
 
 	if (is_ro) {
 		ref->is_ro = true;
@@ -410,6 +424,10 @@ out:
 	NVMAP_TAG_TRACE(trace_nvmap_duplicate_handle,
 		NVMAP_TP_ARGS_CHR(client, h, ref));
 	return ref;
+
+exit:
+	kfree(ref);
+	return ERR_PTR(-EINVAL);
 }
 
 struct nvmap_handle_ref *nvmap_create_handle_from_id(
