@@ -1,0 +1,26 @@
+/*
+ * Top level DTS for CVM:P3767-0003 (Orin Nano 8GB) + CVB:P3768-0000 (A603)
+ * with FRAMOS FSM:GO IMX678 camera sensor via FPA-A/P22 adapter.
+ *
+ * Copyright (c) 2024, Sighthound Inc.  All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ */
+
+/dts-v1/;
+
+#include "tegra234-p3767-0003-p3768-0000-a0.dts"
+#include "cvb/tegra234-p3768-camera-imx678.dtsi"
+
+/ {
+	nvidia,dtsfilename = __FILE__;
+	nvidia,dtbbuildtime = __DATE__, __TIME__;
+	model = "Sighthound DnnCam Orin Nano A603 + IMX678";
+};

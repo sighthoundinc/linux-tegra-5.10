@@ -1,0 +1,463 @@
+/*
+ * Device tree for IMX678 camera sensor on A603 carrier board (15-pin CSI).
+ *
+ * Single camera, 2-lane MIPI CSI-2, connected via FRAMOS FPA-A/P22 adapter
+ * and 22-to-15 pin adapter cable to A603 CSI0 connector.
+ *
+ * Copyright (c) 2024, Sighthound Inc.  All rights reserved.
+ *
+ * Derived from ConnectTech tegra234-orin-nx-cti-NGX024-FSM-IMX678-base.dtsi
+ * and tegra234-cti-fsm-imx678-modes-header.dtsi.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ */
+
+#include <dt-bindings/media/camera.h>
+#include "dt-bindings/gpio/tegra234-gpio.h"
+#include "dt-bindings/clock/tegra234-clock.h"
+
+/* CAM0_PWDN on the A603 15-pin CSI connector
+ * Maps to FPA-A/P22 IS_RST_IN (pin 17) via the 22-to-15 pin adapter cable.
+ * On the Orin Nano devkit/A603 carrier, this is GPIO H6.
+ */
+#define CAM0_PWDN	TEGRA234_MAIN_GPIO(H, 6)
+
+/ {
+	tegra-capture-vi {
+		num-channels = <1>;
+		status = "okay";
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			port@0 {
+				status = "okay";
+				reg = <0>;
+				imx678_vi_in0: endpoint {
+					status = "okay";
+					vc-id = <0>;
+					port-index = <0>;
+					bus-width = <2>;
+					remote-endpoint = <&imx678_csi_out0>;
+				};
+			};
+		};
+	};
+
+	host1x@13e00000 {
+		nvcsi@15a00000 {
+			num-channels = <1>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			status = "okay";
+			channel@0 {
+				status = "okay";
+				reg = <0>;
+				ports {
+					#address-cells = <1>;
+					#size-cells = <0>;
+					status = "okay";
+					port@0 {
+						status = "okay";
+						reg = <0>;
+						imx678_csi_in0: endpoint@0 {
+							status = "okay";
+							port-index = <0>;
+							bus-width = <2>;
+							remote-endpoint = <&imx678_out0>;
+						};
+					};
+					port@1 {
+						status = "okay";
+						reg = <1>;
+						imx678_csi_out0: endpoint@1 {
+							status = "okay";
+							remote-endpoint = <&imx678_vi_in0>;
+						};
+					};
+				};
+			};
+		};
+	};
+
+	/* IMX678 sensor on the A603 camera I2C bus (i2c@c240000 = cam i2c) */
+	i2c@c240000 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		imx678_a@1a {
+			compatible = "framos,imx678";
+			reg = <0x1a>;
+			devnode = "video0";
+
+			/* Clock */
+			clocks = <&bpmp_clks TEGRA234_CLK_EXTPERIPH1>,
+				 <&bpmp_clks TEGRA234_CLK_EXTPERIPH1>;
+			clock-names = "extperiph1", "pllp_grtba";
+			mclk = "extperiph1";
+			clock-frequency = <37125000>;
+
+			/* Power / regulators */
+			vana-supply = <&p3768_vdd_3v3_sys>;
+			vif-supply = <&p3768_vdd_1v8>;
+			avdd-reg = "vana";
+			iovdd-reg = "vif";
+
+			/* GPIO - reset via CAM0_PWDN */
+			reset-gpios = <&tegra_main_gpio CAM0_PWDN GPIO_ACTIVE_HIGH>;
+
+			/* Sensor properties */
+			physical_w = "20.00";
+			physical_h = "16.80";
+			sensor_model = "imx678";
+			post_crop_frame_drop = "0";
+			use_decibel_gain = "true";
+			delayed_gain = "false";
+			use_sensor_mode_id = "false";
+
+			/*
+			 * 2-lane sensor modes for A603 (15-pin CSI = 2 data lanes).
+			 * Parameters from CTI tegra234-cti-fsm-imx678-modes-header.dtsi.
+			 */
+
+			/* Mode 0: 3856x2180 12-bit @ 30fps */
+			mode0 {
+				mclk_khz = "37125";
+				num_lanes = "2";
+				tegra_sinterface = "serial_a";
+				phy_mode = "DPHY";
+				discontinuous_clk = "no";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+				active_w = "3856";
+				active_h = "2180";
+				dynamic_pixel_bit_depth = "12";
+				csi_pixel_bit_depth = "12";
+				mode_type = "bayer";
+				pixel_phase = "rggb";
+				readout_orientation = "0";
+				line_length = "6600";
+				inherent_gain = "1";
+				pix_clk_hz = "950400000";
+				gain_factor = "10";
+				min_gain_val = "0";
+				max_gain_val = "720";
+				step_gain_val = "3";
+				default_gain = "0";
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "64";
+				framerate_factor = "1000000";
+				min_framerate = "1500000";
+				max_framerate = "30000000";
+				step_framerate = "1";
+				default_framerate = "30000000";
+				exposure_factor = "1000000";
+				min_exp_time = "27";
+				max_exp_time = "660000";
+				step_exp_time = "1";
+				default_exp_time = "10000";
+				embedded_metadata_height = "1";
+			};
+
+			/* Mode 1: 2608x1964 12-bit @ 33fps */
+			mode1 {
+				mclk_khz = "37125";
+				num_lanes = "2";
+				tegra_sinterface = "serial_a";
+				phy_mode = "DPHY";
+				discontinuous_clk = "no";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+				active_w = "2608";
+				active_h = "1964";
+				dynamic_pixel_bit_depth = "12";
+				csi_pixel_bit_depth = "12";
+				mode_type = "bayer";
+				pixel_phase = "rggb";
+				readout_orientation = "0";
+				line_length = "6600";
+				inherent_gain = "1";
+				pix_clk_hz = "950400000";
+				gain_factor = "10";
+				min_gain_val = "0";
+				max_gain_val = "720";
+				step_gain_val = "3";
+				default_gain = "0";
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "64";
+				framerate_factor = "1000000";
+				min_framerate = "1500000";
+				max_framerate = "33000000";
+				step_framerate = "1";
+				default_framerate = "33000000";
+				exposure_factor = "1000000";
+				min_exp_time = "27";
+				max_exp_time = "660000";
+				step_exp_time = "1";
+				default_exp_time = "10000";
+				embedded_metadata_height = "1";
+			};
+
+			/* Mode 2: 1920x1080 12-bit @ 59fps */
+			mode2 {
+				mclk_khz = "37125";
+				num_lanes = "2";
+				tegra_sinterface = "serial_a";
+				phy_mode = "DPHY";
+				discontinuous_clk = "no";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+				active_w = "1920";
+				active_h = "1080";
+				dynamic_pixel_bit_depth = "12";
+				csi_pixel_bit_depth = "12";
+				mode_type = "bayer";
+				pixel_phase = "rggb";
+				readout_orientation = "0";
+				line_length = "6600";
+				inherent_gain = "1";
+				pix_clk_hz = "950400000";
+				gain_factor = "10";
+				min_gain_val = "0";
+				max_gain_val = "720";
+				step_gain_val = "3";
+				default_gain = "0";
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "64";
+				framerate_factor = "1000000";
+				min_framerate = "1500000";
+				max_framerate = "59000000";
+				step_framerate = "1";
+				default_framerate = "59000000";
+				exposure_factor = "1000000";
+				min_exp_time = "27";
+				max_exp_time = "660000";
+				step_exp_time = "1";
+				default_exp_time = "10000";
+				embedded_metadata_height = "1";
+			};
+
+			/* Mode 3: 1928x1090 12-bit @ 30fps (binning) */
+			mode3 {
+				mclk_khz = "37125";
+				num_lanes = "2";
+				tegra_sinterface = "serial_a";
+				phy_mode = "DPHY";
+				discontinuous_clk = "no";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+				active_w = "1928";
+				active_h = "1090";
+				dynamic_pixel_bit_depth = "12";
+				csi_pixel_bit_depth = "12";
+				mode_type = "bayer";
+				pixel_phase = "rggb";
+				readout_orientation = "0";
+				line_length = "6600";
+				inherent_gain = "1";
+				pix_clk_hz = "950400000";
+				gain_factor = "10";
+				min_gain_val = "0";
+				max_gain_val = "720";
+				step_gain_val = "3";
+				default_gain = "0";
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "64";
+				framerate_factor = "1000000";
+				min_framerate = "1500000";
+				max_framerate = "30000000";
+				step_framerate = "1";
+				default_framerate = "30000000";
+				exposure_factor = "1000000";
+				min_exp_time = "27";
+				max_exp_time = "660000";
+				step_exp_time = "1";
+				default_exp_time = "10000";
+				embedded_metadata_height = "1";
+			};
+
+			/* Mode 4: 3856x2180 10-bit @ 30fps */
+			mode4 {
+				mclk_khz = "37125";
+				num_lanes = "2";
+				tegra_sinterface = "serial_a";
+				phy_mode = "DPHY";
+				discontinuous_clk = "no";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+				active_w = "3856";
+				active_h = "2180";
+				dynamic_pixel_bit_depth = "10";
+				csi_pixel_bit_depth = "10";
+				mode_type = "bayer";
+				pixel_phase = "rggb";
+				readout_orientation = "0";
+				line_length = "6600";
+				inherent_gain = "1";
+				pix_clk_hz = "950400000";
+				gain_factor = "10";
+				min_gain_val = "0";
+				max_gain_val = "720";
+				step_gain_val = "3";
+				default_gain = "0";
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "64";
+				framerate_factor = "1000000";
+				min_framerate = "1500000";
+				max_framerate = "30000000";
+				step_framerate = "1";
+				default_framerate = "30000000";
+				exposure_factor = "1000000";
+				min_exp_time = "27";
+				max_exp_time = "660000";
+				step_exp_time = "1";
+				default_exp_time = "10000";
+				embedded_metadata_height = "1";
+			};
+
+			/* Mode 5: 2608x1964 10-bit @ 33fps */
+			mode5 {
+				mclk_khz = "37125";
+				num_lanes = "2";
+				tegra_sinterface = "serial_a";
+				phy_mode = "DPHY";
+				discontinuous_clk = "no";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+				active_w = "2608";
+				active_h = "1964";
+				dynamic_pixel_bit_depth = "10";
+				csi_pixel_bit_depth = "10";
+				mode_type = "bayer";
+				pixel_phase = "rggb";
+				readout_orientation = "0";
+				line_length = "6600";
+				inherent_gain = "1";
+				pix_clk_hz = "950400000";
+				gain_factor = "10";
+				min_gain_val = "0";
+				max_gain_val = "720";
+				step_gain_val = "3";
+				default_gain = "0";
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "64";
+				framerate_factor = "1000000";
+				min_framerate = "1500000";
+				max_framerate = "33000000";
+				step_framerate = "1";
+				default_framerate = "33000000";
+				exposure_factor = "1000000";
+				min_exp_time = "27";
+				max_exp_time = "660000";
+				step_exp_time = "1";
+				default_exp_time = "10000";
+				embedded_metadata_height = "1";
+			};
+
+			/* Mode 6: 1920x1080 10-bit @ 59fps */
+			mode6 {
+				mclk_khz = "37125";
+				num_lanes = "2";
+				tegra_sinterface = "serial_a";
+				phy_mode = "DPHY";
+				discontinuous_clk = "no";
+				dpcm_enable = "false";
+				cil_settletime = "0";
+				active_w = "1920";
+				active_h = "1080";
+				dynamic_pixel_bit_depth = "10";
+				csi_pixel_bit_depth = "10";
+				mode_type = "bayer";
+				pixel_phase = "rggb";
+				readout_orientation = "0";
+				line_length = "6600";
+				inherent_gain = "1";
+				pix_clk_hz = "950400000";
+				gain_factor = "10";
+				min_gain_val = "0";
+				max_gain_val = "720";
+				step_gain_val = "3";
+				default_gain = "0";
+				min_hdr_ratio = "1";
+				max_hdr_ratio = "64";
+				framerate_factor = "1000000";
+				min_framerate = "1500000";
+				max_framerate = "59000000";
+				step_framerate = "1";
+				default_framerate = "59000000";
+				exposure_factor = "1000000";
+				min_exp_time = "27";
+				max_exp_time = "660000";
+				step_exp_time = "1";
+				default_exp_time = "10000";
+				embedded_metadata_height = "1";
+			};
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				port@0 {
+					reg = <0>;
+					imx678_out0: endpoint {
+						vc-id = <0>;
+						port-index = <0>;
+						bus-width = <2>;
+						remote-endpoint = <&imx678_csi_in0>;
+					};
+				};
+			};
+		};
+	};
+
+	tegra-camera-platform {
+		compatible = "nvidia, tegra-camera-platform";
+
+		num_csi_lanes = <2>;
+		max_lane_speed = <1500000>;
+		min_bits_per_pixel = <10>;
+		vi_peak_byte_per_pixel = <2>;
+		vi_bw_margin_pct = <25>;
+		max_pixel_rate = <240000>;
+		isp_peak_byte_per_pixel = <5>;
+		isp_bw_margin_pct = <25>;
+
+		modules {
+			module0 {
+				badge = "imx678_front_a603";
+				position = "front";
+				orientation = "1";
+				status = "okay";
+				drivernode0 {
+					status = "okay";
+					pcl_id = "v4l2_sensor";
+				devname = "imx678 1-001a";
+					proc-device-tree = "/proc/device-tree/i2c@c240000/imx678_a@1a";
+				};
+			};
+		};
+	};
+};
+
+/*
+ * GPIO hog: configure CAM0_PWDN (PH.06) as output-low at boot time.
+ *
+ * The FRAMOS IMX678 driver uses the legacy gpio_set_value_cansleep() API
+ * (no gpio_request / gpio_direction_output call) to deassert sensor reset
+ * during power_on.  Without this hog the pin stays in its default input
+ * state and gpio_set_value_cansleep() has no electrical effect, leaving the
+ * sensor held in reset and unable to respond on I2C.
+ *
+ * NOTE: the IMX477 DTSI includes a similar hog but at the wrong address
+ * (gpio@6000d000, a Tegra210-era alias that does not exist on Tegra234/Orin).
+ * This hog uses the correct &tegra_main_gpio (gpio@2200000) reference.
+ */
+&tegra_main_gpio {
+	camera-control-output-low {
+		gpio-hog;
+		output-low;
+		gpios = <CAM0_PWDN 0>;
+		label = "cam0-pwdn";
+	};
+};
