@@ -82,12 +82,24 @@
 		};
 	};
 
-	/* IMX678 sensor on the A603 camera I2C bus (i2c@c240000 = cam i2c) */
-	i2c@c240000 {
-		#address-cells = <1>;
-		#size-cells = <0>;
+	/*
+	 * Enable proper GPIO request/direction/set handling in the FRAMOS
+	 * driver.  Without this, fm_gpio_set() uses gpio_set_value_cansleep()
+	 * which silently fails because the pin is never configured as output.
+	 */
+	framos_platform_adapter {
+		cam,use-cam-gpio;
+	};
 
-		imx678_a@1a {
+	/*
+	 * The base P3768 DTS inherits a cam_i2cmux (i2c-mux-gpio) on the
+	 * camera I2C bus.  Even though the A603 has no physical mux chip,
+	 * the mux driver still intercepts the bus and the sensor is only
+	 * reachable through mux channel 0 (Linux I2C bus 9).
+	 */
+	cam_i2cmux {
+		i2c@0 {
+			imx678_a@1a {
 			compatible = "framos,imx678";
 			reg = <0x1a>;
 			devnode = "video0";
@@ -408,6 +420,7 @@
 					};
 				};
 			};
+			};
 		};
 	};
 
@@ -432,32 +445,10 @@
 				drivernode0 {
 					status = "okay";
 					pcl_id = "v4l2_sensor";
-				devname = "imx678 1-001a";
-					proc-device-tree = "/proc/device-tree/i2c@c240000/imx678_a@1a";
+					devname = "imx678 9-001a";
+					proc-device-tree = "/proc/device-tree/cam_i2cmux/i2c@0/imx678_a@1a";
 				};
 			};
 		};
-	};
-};
-
-/*
- * GPIO hog: configure CAM0_PWDN (PH.06) as output-low at boot time.
- *
- * The FRAMOS IMX678 driver uses the legacy gpio_set_value_cansleep() API
- * (no gpio_request / gpio_direction_output call) to deassert sensor reset
- * during power_on.  Without this hog the pin stays in its default input
- * state and gpio_set_value_cansleep() has no electrical effect, leaving the
- * sensor held in reset and unable to respond on I2C.
- *
- * NOTE: the IMX477 DTSI includes a similar hog but at the wrong address
- * (gpio@6000d000, a Tegra210-era alias that does not exist on Tegra234/Orin).
- * This hog uses the correct &tegra_main_gpio (gpio@2200000) reference.
- */
-&tegra_main_gpio {
-	camera-control-output-low {
-		gpio-hog;
-		output-low;
-		gpios = <CAM0_PWDN 0>;
-		label = "cam0-pwdn";
 	};
 };
