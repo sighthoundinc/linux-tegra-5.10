@@ -115,7 +115,6 @@ static const u32 ctrl_cid_list[] = {
     TEGRA_CAMERA_CID_BROADCAST,
     TEGRA_CAMERA_CID_BLACK_LEVEL,
     TEGRA_CAMERA_CID_TEST_PATTERN,
-    TEGRA_CAMERA_CID_DATA_RATE,
 };
 
 struct imx678 {
