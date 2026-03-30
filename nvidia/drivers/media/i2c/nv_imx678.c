@@ -1212,8 +1212,6 @@ static int imx678_verify_data_rate(struct tegracam_device *tc_dev)
 
 modify_ctrl:
 	dev_warn(dev, "%s: Selected data rate is not supported in this mode, switching to default!\n",  __func__);
-    ctrl = fm_find_v4l2_ctrl(tc_dev, TEGRA_CAMERA_CID_DATA_RATE);
-    v4l2_ctrl_s_ctrl(ctrl, priv->data_rate);
     return 0;
 }
 
@@ -1614,15 +1612,13 @@ static int imx678_set_mode(struct tegracam_device *tc_dev)
         return err;   
     }
 
-    ctrl = fm_find_v4l2_ctrl(tc_dev, TEGRA_CAMERA_CID_DATA_RATE);
-    err = imx678_set_data_rate(tc_dev, *ctrl->p_cur.p_s64);
+    err = imx678_set_data_rate(tc_dev, priv->data_rate);
     if (err) {
         dev_err(dev, "%s: unable to set data rate\n", __func__);
         return err;
     }
-    
-    ctrl = fm_find_v4l2_ctrl(tc_dev, TEGRA_CAMERA_CID_TEST_PATTERN);
-    err = imx678_set_test_pattern(tc_dev, *ctrl->p_cur.p_s64);
+
+    err = imx678_set_test_pattern(tc_dev, 0);
     if (err) {
         dev_err(dev, "%s: unable to set Test pattern\n", __func__);
         return err;
@@ -2181,13 +2177,10 @@ static int imx678_probe(struct i2c_client *client,
     if (err)
 		return err;
 
-	err = imx678_update_ctrl(tc_dev, TEGRA_CAMERA_CID_TEST_PATTERN, 0, 0, 0, (ARRAY_SIZE(imx678_test_pattern_menu)-1));
-    if (err)
-		return err;
-
-    err = imx678_update_ctrl(tc_dev, TEGRA_CAMERA_CID_DATA_RATE, 0, 0, 0, (ARRAY_SIZE(imx678_data_rate_menu)-1));
-    if (err)
-		return err;
+    /* TEST_PATTERN and DATA_RATE controls removed from ctrl_cid_list
+     * (not supported in vanilla L4T tegracam framework).
+     * Data rate and test pattern are configured directly in set_mode().
+     */
 
     list_add_tail(&priv->entry, &imx678_sensor_list);
 
