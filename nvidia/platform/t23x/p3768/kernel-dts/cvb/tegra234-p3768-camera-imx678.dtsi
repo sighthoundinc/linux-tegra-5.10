@@ -99,6 +99,15 @@
 	 */
 	cam_i2cmux {
 		i2c@0 {
+			/*
+			 * Disable the base-DTS IMX219 node.  Even though the sensor is
+			 * not physically present, its tegra-camera-platform module
+			 * entry targets serial_b/stream-1 and causes RTCPU VI channel
+			 * conflicts with our IMX678.
+			 */
+			rbpcv2_imx219_a@10 {
+				status = "disabled";
+			};
 			imx678_a@1a {
 			compatible = "framos,imx678";
 			reg = <0x1a>;
@@ -429,6 +438,15 @@
 			};
 			};
 		};
+		/* Disable second-slot camera nodes from the base DTS */
+		i2c@1 {
+			rbpcv2_imx219_c@10 {
+				status = "disabled";
+			};
+			rbpcv3_imx477_c@1a {
+				status = "disabled";
+			};
+		};
 	};
 
 	tegra-camera-platform {
@@ -444,6 +462,14 @@
 		isp_bw_margin_pct = <25>;
 
 		modules {
+			/*
+			 * Disable module1 from the base camera DTSIs (IMX219/IMX477
+			 * second camera slot). It also targets serial_b and would
+			 * claim the same RTCPU VI channel match config as our IMX678.
+			 */
+			module1 {
+				status = "disabled";
+			};
 			module0 {
 				badge = "imx678_front_a603";
 				position = "front";
