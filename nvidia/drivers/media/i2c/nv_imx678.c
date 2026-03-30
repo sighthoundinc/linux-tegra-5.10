@@ -1133,7 +1133,6 @@ static int imx678_verify_data_rate(struct tegracam_device *tc_dev)
 	struct camera_common_data *s_data = tc_dev->s_data;
 	struct imx678 *priv = (struct imx678 *)tegracam_get_privdata(tc_dev);
 	struct device *dev = tc_dev->dev;
-    struct v4l2_ctrl *ctrl;
 
     dev_dbg(dev, "%s++\n", __func__);
 
@@ -1569,7 +1568,6 @@ static int imx678_set_mode(struct tegracam_device *tc_dev)
 	struct imx678 *priv = (struct imx678 *)tegracam_get_privdata(tc_dev);
 	struct camera_common_data *s_data = tc_dev->s_data;
 	struct device *dev = tc_dev->dev;
-	struct v4l2_ctrl *ctrl;
 	int err;
 
     err = imx678_write_table(priv, mode_table[IMX678_INIT_SETTINGS]);
