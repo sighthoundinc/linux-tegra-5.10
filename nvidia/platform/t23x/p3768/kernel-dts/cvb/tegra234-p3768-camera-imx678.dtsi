@@ -463,13 +463,14 @@
 
 		modules {
 			/*
-			 * Disable module1 from the base camera DTSIs (IMX219/IMX477
-			 * second camera slot). It also targets serial_b and would
-			 * claim the same RTCPU VI channel match config as our IMX678.
+			 * Completely remove module1 from the base camera DTSIs.
+			 * status="disabled" is ignored by tegra-capture-vi (it does
+			 * not call of_device_is_available() on module nodes), so the
+			 * driver still allocates a VI channel for module1 which claims
+			 * stream-1/vc-0 and causes:
+			 *   vi5_update_channel_match_data: already in use by channel 35
 			 */
-			module1 {
-				status = "disabled";
-			};
+			/delete-node/ module1;
 			module0 {
 				badge = "imx678_front_a603";
 				position = "front";
