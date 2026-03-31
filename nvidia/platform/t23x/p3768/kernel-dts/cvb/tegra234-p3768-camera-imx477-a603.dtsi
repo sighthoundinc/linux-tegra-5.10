@@ -1,0 +1,42 @@
+/*
+ * Enable IMX477 (RBPv3) camera sensor on A603 carrier board W9 connector.
+ *
+ * The base tegra234-p3768-camera-rbpcv3-imx477.dtsi has all mode tables,
+ * VI/NVCSI endpoints, and tegra-camera-platform entries pre-configured for
+ * serial_b / port-index=1 / lane_polarity="6" (correct for A603 W9).
+ * This file simply enables the sensor node and disables conflicting modules.
+ *
+ * Copyright (c) 2024, Sighthound Inc. All rights reserved.
+ */
+/ {
+	cam_i2cmux {
+		i2c@0 {
+			/* Enable IMX477 on mux channel 0 (Linux I2C bus 9, addr 0x1a) */
+			rbpcv3_imx477_a@1a {
+				status = "okay";
+			};
+		};
+		/* Disable second-slot camera nodes to prevent RTCPU VI channel conflicts */
+		i2c@1 {
+			rbpcv3_imx477_c@1a {
+				status = "disabled";
+			};
+			rbpcv2_imx219_c@10 {
+				status = "disabled";
+			};
+		};
+	};
+
+	tegra-camera-platform {
+		modules {
+			/*
+			 * Disable module1 (second camera slot). It also targets serial_b
+			 * and would claim the same RTCPU VI channel match config as module0.
+			 * Without this, VI channel allocation fails with "channel 35 in use".
+			 */
+			module1 {
+				status = "disabled";
+			};
+		};
+	};
+};

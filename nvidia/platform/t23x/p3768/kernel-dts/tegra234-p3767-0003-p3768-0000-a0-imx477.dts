@@ -1,0 +1,16 @@
+/*
+ * Top-level DTS for CVM:P3767-0003 (Orin Nano 8GB) + CVB:P3768-0000 (A603)
+ * with Sony IMX477 camera (RPi Camera V3 / RBPv3 module) via W9 connector.
+ *
+ * Copyright (c) 2024, Sighthound Inc. All rights reserved.
+ */
+/dts-v1/;
+
+#include "tegra234-p3767-0003-p3768-0000-a0.dts"
+#include "cvb/tegra234-p3768-camera-imx477-a603.dtsi"
+
+/ {
+	nvidia,dtsfilename = __FILE__;
+	nvidia,dtbbuildtime = __DATE__, __TIME__;
+	model = "Sighthound DnnCam Orin Nano A603 + IMX477";
+};
