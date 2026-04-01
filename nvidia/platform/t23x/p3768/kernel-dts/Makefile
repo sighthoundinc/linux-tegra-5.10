@@ -25,6 +25,7 @@ dtb-$(BUILD_ENABLE) += tegra234-p3767-0000-as-p3767-0004-p3768-0000-a0.dtb
 dtb-$(BUILD_ENABLE) += tegra234-p3767-0001-p3768-0000-a0.dtb
 dtb-$(BUILD_ENABLE) += tegra234-p3767-0001-super-p3768-0000-a0.dtb
 dtb-$(BUILD_ENABLE) += tegra234-p3767-0003-p3768-0000-a0.dtb
+dtb-$(BUILD_ENABLE) += tegra234-p3767-0003-p3768-0000-a0-imx477.dtb
 dtb-$(BUILD_ENABLE) += tegra234-p3767-0003-super-p3768-0000-a0.dtb
 dtb-$(BUILD_ENABLE) += tegra234-p3767-0004-p3768-0000-a0.dtb
 dtb-$(BUILD_ENABLE) += tegra234-p3767-0004-super-p3768-0000-a0.dtb
