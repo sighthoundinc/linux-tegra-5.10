@@ -1,10 +1,20 @@
 /*
  * Enable IMX477 (RBPv3) camera sensor on A603 carrier board W9 connector.
  *
- * The base tegra234-p3768-camera-rbpcv3-imx477.dtsi has all mode tables,
- * VI/NVCSI endpoints, and tegra-camera-platform entries pre-configured for
- * serial_b / port-index=1 / lane_polarity="6" (correct for A603 W9).
- * This file simply enables the sensor node and disables conflicting modules.
+ * Fixes applied on top of the base tegra234-p3768-camera-rbpcv3-imx477.dtsi:
+ *
+ * 1. GPIO hog: the base DTS drives CAM0_PWDN (PH.06, GPIO 62) output-low
+ *    at boot via camera-control-output-low, holding the IMX477 in reset and
+ *    causing EBUSY when the driver tries to claim it. Delete the hog so the
+ *    driver owns and manages PH.06 via its reset-gpios property.
+ *
+ * 2. CSI interface: the base mode tables target serial_a / port-index=0
+ *    (NVIDIA reference devkit). The A603 W9 connector physically routes to
+ *    NVCSI brick 1 (serial_b, port-index=1). Override all three layers:
+ *    sensor modes, VI input endpoint, and NVCSI channel endpoint.
+ *
+ * lane_polarity="6" (DATA0+DATA1 inverted) is already correct in the base
+ * DTSI for the A603 W9 PCB traces; no override needed.
  *
  * Copyright (c) 2024, Sighthound Inc. All rights reserved.
  */
@@ -14,6 +24,24 @@
 			/* Enable IMX477 on mux channel 0 (Linux I2C bus 9, addr 0x1a) */
 			rbpcv3_imx477_a@1a {
 				status = "okay";
+
+				/*
+				 * A603 W9 routes to NVCSI brick 1 (serial_b, port-index=1).
+				 * Base DTSI targets serial_a for the NVIDIA reference devkit.
+				 */
+				mode0 {
+					tegra_sinterface = "serial_b";
+				};
+				mode1 {
+					tegra_sinterface = "serial_b";
+				};
+				ports {
+					port@0 {
+						endpoint {
+							port-index = <1>;
+						};
+					};
+				};
 			};
 		};
 		/* Disable second-slot camera nodes to prevent RTCPU VI channel conflicts */
@@ -25,6 +53,42 @@
 				status = "disabled";
 			};
 		};
+	};
+
+	/* Match VI input port-index to serial_b (brick 1) */
+	tegra-capture-vi {
+		ports {
+			port@0 {
+				endpoint {
+					port-index = <1>;
+				};
+			};
+		};
+	};
+
+	/* Match NVCSI channel port-index to serial_b (brick 1) */
+	host1x@13e00000 {
+		nvcsi@15a00000 {
+			channel@0 {
+				ports {
+					port@0 {
+						endpoint@0 {
+							port-index = <1>;
+						};
+					};
+				};
+			};
+		};
+	};
+
+	/*
+	 * Remove CAM0_PWDN (PH.06 / GPIO 62) from the gpio-hog entirely.
+	 * The base DTS camera-control-output-low hog drives it output-low
+	 * at boot (sensor in reset) and blocks the driver with EBUSY.
+	 * The imx477 driver manages PH.06 itself via reset-gpios.
+	 */
+	gpio@6000d000 {
+		/delete-node/ camera-control-output-low;
 	};
 
 	tegra-camera-platform {
