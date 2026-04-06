@@ -32,6 +32,14 @@
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
+			/*
+			 * Delete the base IMX219 DTSI's second VI port. The
+			 * num-channels override to <1> does not remove child
+			 * nodes, so port@1 (serial_c/port-index 2) survives
+			 * the merge and causes the RTCPU to allocate a second
+			 * VI channel that conflicts with our IMX678 capture.
+			 */
+			/delete-node/ port@1;
 			port@0 {
 				status = "okay";
 				reg = <0>;
@@ -52,6 +60,8 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "okay";
+			/* Delete dangling NVCSI channel@1 from base IMX219 DTSI */
+			/delete-node/ channel@1;
 			channel@0 {
 				status = "okay";
 				reg = <0>;
