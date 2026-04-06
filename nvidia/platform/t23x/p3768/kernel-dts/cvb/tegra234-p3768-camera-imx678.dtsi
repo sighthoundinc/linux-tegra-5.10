@@ -455,13 +455,19 @@
 			};
 			};
 		};
-		/* Disable second-slot camera nodes from the base DTS */
+		/* Disable second-slot camera nodes from the base DTS.
+		 * Also delete their ports nodes to remove phandle references
+		 * to rbpcv2_imx219_csi_in1 and rbpcv3_imx477_csi_in1 which
+		 * live in NVCSI channel@1 (deleted below). Without removing
+		 * these references DTC errors on phandle_references check. */
 		i2c@1 {
 			rbpcv2_imx219_c@10 {
 				status = "disabled";
+				/delete-node/ ports;
 			};
 			rbpcv3_imx477_c@1a {
 				status = "disabled";
+				/delete-node/ ports;
 			};
 		};
 	};
