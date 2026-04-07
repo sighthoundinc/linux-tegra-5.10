@@ -46,7 +46,7 @@
 				imx678_vi_in0: endpoint {
 					status = "okay";
 					vc-id = <0>;
-					port-index = <1>;
+					port-index = <0>;
 					bus-width = <2>;
 					remote-endpoint = <&imx678_csi_out0>;
 				};
@@ -74,7 +74,7 @@
 						reg = <0>;
 						imx678_csi_in0: endpoint@0 {
 							status = "okay";
-							port-index = <1>;
+							port-index = <0>;
 							bus-width = <2>;
 							remote-endpoint = <&imx678_out0>;
 						};
@@ -157,7 +157,7 @@
 			mode0 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_b";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
@@ -198,7 +198,7 @@
 			mode1 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_b";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
@@ -239,7 +239,7 @@
 			mode2 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_b";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
@@ -280,7 +280,7 @@
 			mode3 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_b";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
@@ -321,7 +321,7 @@
 			mode4 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_b";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
@@ -362,7 +362,7 @@
 			mode5 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_b";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
@@ -403,7 +403,7 @@
 			mode6 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_b";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
@@ -447,7 +447,7 @@
 					reg = <0>;
 					imx678_out0: endpoint {
 						vc-id = <0>;
-						port-index = <1>;
+						port-index = <0>;
 						bus-width = <2>;
 						remote-endpoint = <&imx678_csi_in0>;
 					};
