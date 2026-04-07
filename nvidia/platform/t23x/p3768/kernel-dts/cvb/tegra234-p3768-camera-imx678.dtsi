@@ -172,8 +172,8 @@
 				readout_orientation = "0";
 				line_length = "6600";
 				inherent_gain = "1";
-				pix_clk_hz = "594000000";
-				mipi_pixel_rate = "594000000";
+				pix_clk_hz = "297000000";
+				mipi_pixel_rate = "297000000";
 				gain_factor = "10";
 				min_gain_val = "0";
 				max_gain_val = "720";
@@ -213,8 +213,8 @@
 				readout_orientation = "0";
 				line_length = "6600";
 				inherent_gain = "1";
-				pix_clk_hz = "594000000";
-				mipi_pixel_rate = "594000000";
+				pix_clk_hz = "297000000";
+				mipi_pixel_rate = "297000000";
 				gain_factor = "10";
 				min_gain_val = "0";
 				max_gain_val = "720";
@@ -254,8 +254,8 @@
 				readout_orientation = "0";
 				line_length = "6600";
 				inherent_gain = "1";
-				pix_clk_hz = "594000000";
-				mipi_pixel_rate = "594000000";
+				pix_clk_hz = "297000000";
+				mipi_pixel_rate = "297000000";
 				gain_factor = "10";
 				min_gain_val = "0";
 				max_gain_val = "720";
@@ -295,8 +295,8 @@
 				readout_orientation = "0";
 				line_length = "6600";
 				inherent_gain = "1";
-				pix_clk_hz = "594000000";
-				mipi_pixel_rate = "594000000";
+				pix_clk_hz = "297000000";
+				mipi_pixel_rate = "297000000";
 				gain_factor = "10";
 				min_gain_val = "0";
 				max_gain_val = "720";
@@ -336,8 +336,8 @@
 				readout_orientation = "0";
 				line_length = "6600";
 				inherent_gain = "1";
-				pix_clk_hz = "576000000";
-				mipi_pixel_rate = "576000000";
+				pix_clk_hz = "288000000";
+				mipi_pixel_rate = "288000000";
 				gain_factor = "10";
 				min_gain_val = "0";
 				max_gain_val = "720";
@@ -377,8 +377,8 @@
 				readout_orientation = "0";
 				line_length = "6600";
 				inherent_gain = "1";
-				pix_clk_hz = "576000000";
-				mipi_pixel_rate = "576000000";
+				pix_clk_hz = "288000000";
+				mipi_pixel_rate = "288000000";
 				gain_factor = "10";
 				min_gain_val = "0";
 				max_gain_val = "720";
@@ -418,8 +418,8 @@
 				readout_orientation = "0";
 				line_length = "6600";
 				inherent_gain = "1";
-				pix_clk_hz = "576000000";
-				mipi_pixel_rate = "576000000";
+				pix_clk_hz = "288000000";
+				mipi_pixel_rate = "288000000";
 				gain_factor = "10";
 				min_gain_val = "0";
 				max_gain_val = "720";
@@ -480,7 +480,7 @@
 		min_bits_per_pixel = <10>;
 		vi_peak_byte_per_pixel = <2>;
 		vi_bw_margin_pct = <25>;
-		max_pixel_rate = <594000>;
+		max_pixel_rate = <297000>;
 		isp_peak_byte_per_pixel = <5>;
 		isp_bw_margin_pct = <25>;
 
