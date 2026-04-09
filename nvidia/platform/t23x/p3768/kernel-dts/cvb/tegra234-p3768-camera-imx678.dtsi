@@ -43,10 +43,13 @@
 			port@0 {
 				status = "okay";
 				reg = <0>;
+				/* Delete the base IMX219 endpoint to get a
+				 * clean VI channel assignment (channel 0). */
+				/delete-node/ endpoint;
 				imx678_vi_in0: endpoint {
 					status = "okay";
 					vc-id = <0>;
-					port-index = <2>;
+					port-index = <0>;
 					bus-width = <2>;
 					remote-endpoint = <&imx678_csi_out0>;
 				};
@@ -74,7 +77,7 @@
 						reg = <0>;
 						imx678_csi_in0: endpoint@0 {
 							status = "okay";
-							port-index = <2>;
+							port-index = <0>;
 							bus-width = <2>;
 							remote-endpoint = <&imx678_out0>;
 						};
@@ -117,6 +120,11 @@
 			 */
 			rbpcv2_imx219_a@10 {
 				status = "disabled";
+				/delete-node/ ports;
+			};
+			rbpcv3_imx477_a@1a {
+				status = "disabled";
+				/delete-node/ ports;
 			};
 			imx678_a@1a {
 			compatible = "framos,imx678";
@@ -157,12 +165,12 @@
 			mode0 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_c";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
-				cil_settletime = "25";
-				lane_polarity = "0";
+				cil_settletime = "0";
+				lane_polarity = "6";
 				active_w = "3856";
 				active_h = "2180";
 				dynamic_pixel_bit_depth = "12";
@@ -198,12 +206,12 @@
 			mode1 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_c";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
-				cil_settletime = "25";
-				lane_polarity = "0";
+				cil_settletime = "0";
+				lane_polarity = "6";
 				active_w = "2608";
 				active_h = "1964";
 				dynamic_pixel_bit_depth = "12";
@@ -239,12 +247,12 @@
 			mode2 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_c";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
-				cil_settletime = "25";
-				lane_polarity = "0";
+				cil_settletime = "0";
+				lane_polarity = "6";
 				active_w = "1920";
 				active_h = "1080";
 				dynamic_pixel_bit_depth = "12";
@@ -280,12 +288,12 @@
 			mode3 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_c";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
-				cil_settletime = "25";
-				lane_polarity = "0";
+				cil_settletime = "0";
+				lane_polarity = "6";
 				active_w = "1928";
 				active_h = "1090";
 				dynamic_pixel_bit_depth = "12";
@@ -321,12 +329,12 @@
 			mode4 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_c";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
-				cil_settletime = "25";
-				lane_polarity = "0";
+				cil_settletime = "0";
+				lane_polarity = "6";
 				active_w = "3856";
 				active_h = "2180";
 				dynamic_pixel_bit_depth = "10";
@@ -362,12 +370,12 @@
 			mode5 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_c";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
-				cil_settletime = "25";
-				lane_polarity = "0";
+				cil_settletime = "0";
+				lane_polarity = "6";
 				active_w = "2608";
 				active_h = "1964";
 				dynamic_pixel_bit_depth = "10";
@@ -403,12 +411,12 @@
 			mode6 {
 				mclk_khz = "37125";
 				num_lanes = "2";
-				tegra_sinterface = "serial_c";
+				tegra_sinterface = "serial_a";
 				phy_mode = "DPHY";
 				discontinuous_clk = "no";
 				dpcm_enable = "false";
-				cil_settletime = "25";
-				lane_polarity = "0";
+				cil_settletime = "0";
+				lane_polarity = "6";
 				active_w = "1920";
 				active_h = "1080";
 				dynamic_pixel_bit_depth = "10";
@@ -447,7 +455,7 @@
 					reg = <0>;
 					imx678_out0: endpoint {
 						vc-id = <0>;
-						port-index = <2>;
+						port-index = <0>;
 						bus-width = <2>;
 						remote-endpoint = <&imx678_csi_in0>;
 					};
