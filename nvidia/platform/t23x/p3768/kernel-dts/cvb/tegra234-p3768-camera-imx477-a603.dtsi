@@ -45,13 +45,19 @@
 				};
 			};
 		};
-		/* Disable second-slot camera nodes to prevent RTCPU VI channel conflicts */
+		/* Disable second-slot camera nodes to prevent RTCPU VI channel conflicts.
+		 * Also delete their ports nodes to remove phandle references to
+		 * rbpcv3_imx477_csi_in1 and rbpcv2_imx219_csi_in1 which live in
+		 * NVCSI channel@1 (deleted above). Without this, DTC errors on
+		 * phandle_references check. */
 		i2c@1 {
 			rbpcv3_imx477_c@1a {
 				status = "disabled";
+				/delete-node/ ports;
 			};
 			rbpcv2_imx219_c@10 {
 				status = "disabled";
+				/delete-node/ ports;
 			};
 		};
 	};
