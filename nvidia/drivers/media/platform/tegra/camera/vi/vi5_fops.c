@@ -338,6 +338,8 @@ static int tegra_channel_capture_setup(struct tegra_channel *chan, unsigned int 
 	chan->request[vi_port] = dma_alloc_coherent(chan->tegra_vi_channel[vi_port]->rtcpu_dev,
 					setup.queue_depth * setup.request_size,
 					&setup.iova, GFP_KERNEL);
+	chan->request_iova[vi_port] = setup.iova;
+
 	if (chan->request[vi_port] == NULL) {
 		dev_err(chan->vi->dev, "dma_alloc_coherent failed\n");
 		return -ENOMEM;
@@ -628,7 +630,15 @@ static int vi5_channel_error_recover(struct tegra_channel *chan,
 
 	/* stop vi channel */
 	for (vi_port = 0; vi_port < chan->valid_ports; vi_port++) {
-		filp_close(chan->fp[vi_port], NULL);
+		err = vi_capture_release(chan->tegra_vi_channel[vi_port],
+			CAPTURE_CHANNEL_RESET_FLAG_IMMEDIATE);
+		if (err) {
+			dev_err(&chan->video->dev, "vi capture release failed\n");
+			goto done;
+		}
+		vi_channel_close_ex(chan->vi_channel_id[vi_port],
+					chan->tegra_vi_channel[vi_port]);
+
 		chan->tegra_vi_channel[vi_port] = NULL;
 		kfree(chan->tegra_vi_channel[vi_port]);
 	}
@@ -660,9 +670,6 @@ static int vi5_channel_error_recover(struct tegra_channel *chan,
 		err = -1;
 		goto done;
 	}
-
-	v4l2_subdev_call(csi_subdev, core, sync,
-		V4L2_SYNC_EVENT_SUBDEV_ERROR_RECOVER);
 
 	/* restart vi channel */
 	for (vi_port = 0; vi_port < chan->valid_ports; vi_port++) {
@@ -974,7 +981,8 @@ err_set_stream:
 err_setup:
 	if (!chan->bypass)
 		for (vi_port = 0; vi_port < chan->valid_ports; vi_port++) {
-			filp_close(chan->fp[vi_port], NULL);
+			vi_channel_close_ex(chan->vi_channel_id[vi_port],
+				chan->tegra_vi_channel[vi_port]);
 			chan->tegra_vi_channel[vi_port] = NULL;
 		}
 
@@ -989,6 +997,8 @@ static int vi5_channel_stop_streaming(struct vb2_queue *vq)
 {
 	struct tegra_channel *chan = vb2_get_drv_priv(vq);
 	int vi_port = 0;
+	int err;
+
 	if (!chan->bypass)
 		vi5_channel_stop_kthreads(chan);
 
@@ -997,7 +1007,35 @@ static int vi5_channel_stop_streaming(struct vb2_queue *vq)
 
 	if (!chan->bypass) {
 		for (vi_port = 0; vi_port < chan->valid_ports; vi_port++) {
-			filp_close(chan->fp[vi_port], NULL);
+			err = vi_capture_release(chan->tegra_vi_channel[vi_port],
+				CAPTURE_CHANNEL_RESET_FLAG_IMMEDIATE);
+
+			if (err)
+				dev_err(&chan->video->dev,
+					"vi capture release failed\n");
+
+			/* Release capture requests */
+			if (chan->request[vi_port] != NULL) {
+				dma_free_coherent(chan->tegra_vi_channel[vi_port]->rtcpu_dev,
+				chan->capture_queue_depth * sizeof(struct capture_descriptor),
+				chan->request[vi_port], chan->request_iova[vi_port]);
+			}
+			chan->request[vi_port] = NULL;
+
+			/* Release emd data buffers */
+			if (chan->emb_buf_size > 0) {
+				struct device *vi_unit_dev;
+
+				vi5_unit_get_device_handle(chan->vi->ndev, chan->port[0],
+					&vi_unit_dev);
+				dma_free_coherent(vi_unit_dev, chan->emb_buf_size,
+					chan->emb_buf_addr, chan->emb_buf);
+				chan->emb_buf_size = 0;
+			}
+
+			vi_channel_close_ex(chan->vi_channel_id[vi_port],
+						chan->tegra_vi_channel[vi_port]);
+
 			chan->tegra_vi_channel[vi_port] = NULL;
 			kfree(chan->tegra_vi_channel[vi_port]);
 		}

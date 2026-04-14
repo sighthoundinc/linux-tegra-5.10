@@ -26,19 +26,20 @@
 				status = "okay";
 
 				/*
-				 * A603 W9 routes to NVCSI brick 1 (serial_b, port-index=1).
-				 * Base DTSI targets serial_a for the NVIDIA reference devkit.
+				 * A603 W9 routes to NVCSI brick 0 (serial_a, port-index=0).
+				 * Confirmed empirically: serial_a + lane_polarity=6 is the
+				 * correct mapping for the A603 CSI connector.
 				 */
 				mode0 {
-					tegra_sinterface = "serial_b";
+					tegra_sinterface = "serial_a";
 				};
 				mode1 {
-					tegra_sinterface = "serial_b";
+					tegra_sinterface = "serial_a";
 				};
 				ports {
 					port@0 {
 						endpoint {
-							port-index = <1>;
+							port-index = <0>;
 						};
 					};
 				};
@@ -55,25 +56,29 @@
 		};
 	};
 
-	/* Match VI input port-index to serial_b (brick 1) */
+	/* Match VI input port-index to serial_a (brick 0), delete dangling port@1 */
 	tegra-capture-vi {
+		num-channels = <1>;
 		ports {
+			/delete-node/ port@1;
 			port@0 {
 				endpoint {
-					port-index = <1>;
+					port-index = <0>;
 				};
 			};
 		};
 	};
 
-	/* Match NVCSI channel port-index to serial_b (brick 1) */
+	/* Match NVCSI channel port-index to serial_a (brick 0), delete dangling channel@1 */
 	host1x@13e00000 {
 		nvcsi@15a00000 {
+			num-channels = <1>;
+			/delete-node/ channel@1;
 			channel@0 {
 				ports {
 					port@0 {
 						endpoint@0 {
-							port-index = <1>;
+							port-index = <0>;
 						};
 					};
 				};
@@ -98,9 +103,7 @@
 			 * and would claim the same RTCPU VI channel match config as module0.
 			 * Without this, VI channel allocation fails with "channel 35 in use".
 			 */
-			module1 {
-				status = "disabled";
-			};
+			/delete-node/ module1;
 		};
 	};
 };
